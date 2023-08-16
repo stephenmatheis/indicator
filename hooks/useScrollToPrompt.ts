@@ -17,7 +17,7 @@ export function useScrollToPrompt({
     prompts: overridePrompts,
     scrollCtr,
 }: Props) {
-    const { prompts, selected } = usePrompts();
+    const { prompts, selected, indicatorRef } = usePrompts();
     const localSelected = overrideSelected || selected;
     const localPrompts = overridePrompts || prompts;
     const promptIndex = localPrompts.map(({ label }) => label).indexOf(label);
@@ -57,6 +57,15 @@ export function useScrollToPrompt({
             (matchMedia('(pointer:fine)').matches ? window : node)?.scrollTo(
                 options
             );
+
+            if (!indicatorRef.current || !indicatorRef.current) {
+                return;
+            }
+
+            const { x, y } = ref.current?.getBoundingClientRect() as DOMRect;
+
+            indicatorRef.current.style.top = `${y}px`;
+            indicatorRef.current.style.left = `${x}px`;
         }
     }, [
         promptIndex,
@@ -66,6 +75,7 @@ export function useScrollToPrompt({
         prompts,
         selected,
         scrollCtr,
+        indicatorRef,
     ]);
 
     return {

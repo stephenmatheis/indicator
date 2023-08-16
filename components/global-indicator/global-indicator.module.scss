@@ -1,5 +1,6 @@
 .indicator {
-    position: absolute;
+    // position: absolute;
+    position: fixed;
     left: calc(var(--icon-size) * -1 - 0.5ch);
     display: flex;
     align-items: center;
@@ -10,9 +11,9 @@
         width: var(--icon-size);
     }
 
-    // &.selected {
-    //     svg {
-    //         fill: var(--primary);
-    //     }
-    // }
+    &.selected {
+        svg {
+            fill: var(--primary);
+        }
+    }
 }

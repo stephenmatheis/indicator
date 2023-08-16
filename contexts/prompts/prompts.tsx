@@ -1,8 +1,16 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+    RefObject,
+    createContext,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
+import { GlobalIndicator } from '@/components/global-indicator';
 
 export type PromptProps = {
     label: string;
@@ -19,6 +27,7 @@ export type PromptsContextProps = {
     setSelected: React.Dispatch<React.SetStateAction<number>>;
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    indicatorRef: RefObject<HTMLDivElement>;
 };
 
 const PromptsContext = createContext<PromptsContextProps>({
@@ -28,13 +37,14 @@ const PromptsContext = createContext<PromptsContextProps>({
     setSelected: () => null,
     open: false,
     setOpen: () => null,
+    indicatorRef: { current: null },
 });
 
 export function usePrompts() {
     return useContext(PromptsContext);
 }
 
-export function PromptsProvider({ children, prompts: defaultPrompts }) {
+export function PromptsProvider({ children }) {
     const router = useRouter();
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
@@ -42,6 +52,7 @@ export function PromptsProvider({ children, prompts: defaultPrompts }) {
     const pathIndex = prompts.map(({ path }) => path).indexOf(pathname);
     const startIndex = pathIndex !== -1 ? pathIndex : 0;
     const [selected, setSelected] = useState<number>(startIndex);
+    const indicatorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         function selectNext(event: KeyboardEvent) {
@@ -119,9 +130,11 @@ export function PromptsProvider({ children, prompts: defaultPrompts }) {
                 setSelected,
                 open,
                 setOpen,
+                indicatorRef,
             }}
         >
             {children}
+            <GlobalIndicator ref={indicatorRef} />
         </PromptsContext.Provider>
     );
 }
